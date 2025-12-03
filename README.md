@@ -2,7 +2,7 @@
 
 A complete RAG (Retrieval-Augmented Generation) system for querying Kaiser health insurance documents using embeddings and LLMs.
 
-## 🏗️ Architecture
+##  Architecture
 
 ```
 PDFs (Data) → Ingestion Pipeline → Vector Store (Chroma) → RAG Pipeline → LLM → Answer
@@ -30,7 +30,7 @@ PDFs (Data) → Ingestion Pipeline → Vector Store (Chroma) → RAG Pipeline �
    - `data/kaiser/` - Local PDF files (automatically ingested)
    - `data/embeddings/chroma/` - Vector store (persistent storage)
 
-## 🚀 Quick Start
+##  Quick Start
 
 ### 1. Setup
 
@@ -112,7 +112,7 @@ Content-Type: application/json
 }
 ```
 
-## 📁 Project Structure
+##  Project Structure
 
 ```
 kaiser-rag/
@@ -146,7 +146,7 @@ CHUNK_SIZE: int = 800                  # Text chunk size
 CHUNK_OVERLAP: int = 100               # Overlap between chunks
 ```
 
-## 🔄 How It Works
+##  How It Works
 
 ### Ingestion Flow
 1. Load PDF from `data/kaiser/`
@@ -162,22 +162,22 @@ CHUNK_OVERLAP: int = 100               # Overlap between chunks
 4. Pass question + context to GPT-4
 5. Return generated answer with sources
 
-## 📊 Current Status
+##  Current Status
 
-✅ **Completed:**
+ **Completed:**
 - Document ingestion (1,078 chunks indexed)
 - Vector store (Chroma)
 - RAG pipeline
 - FastAPI endpoints
 
-📋 **Future Enhancements:**
+ **Future Enhancements:**
 - Query reranking
 - Multi-query expansion
 - Response caching
 - Evaluation metrics (RAGAS)
 - Admin API for managing documents
 
-## 🐛 Troubleshooting
+##  Troubleshooting
 
 **"No documents retrieved"**
 - Ensure `run_ingestion.py` was executed successfully
@@ -191,7 +191,7 @@ CHUNK_OVERLAP: int = 100               # Overlap between chunks
 - Check `.env` file has valid `OPENAI_API_KEY`
 - Verify API key has sufficient credits
 
-## 📝 License
+##  License
 
 Internal Use Only
 
