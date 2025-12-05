@@ -1,36 +1,25 @@
 # app/ingestion/doc_loader.py
-"""Document loader wrapper with resilient fallbacks.
-
-This module first tries to delegate to the `docling` package when available and
-compatible. If `docling` is absent or doesn't expose the expected API, the
-module falls back to a lightweight local implementation that can read local
-text files and extract text from PDFs using `pypdf`.
-
-The public API is `load_document_from_url(url: str) -> (text, metadata)` to
-keep compatibility with the rest of the codebase.
-"""
 from __future__ import annotations
 
 import io
 import logging
 from pathlib import Path
 from typing import Tuple, Optional
+from pypdf import PdfReader
 
 logger = logging.getLogger(__name__)
 
 try:
     # docling may be installed but with a different API; guard imports.
-    from docling import DocumentLoader as DoclingLoader  # type: ignore
+    from docling import DocumentLoader as DoclingLoader  
 except Exception:
-    DoclingLoader = None  # type: ignore
+    DoclingLoader = None  
 
 from app.schemas.ingestion import DocumentMetadata
 
 
 def _extract_text_from_pdf_path(path: Path) -> str:
     try:
-        from pypdf import PdfReader
-
         reader = PdfReader(str(path))
         pages = [p.extract_text() or "" for p in reader.pages]
         return "\n".join(pages)
@@ -41,8 +30,6 @@ def _extract_text_from_pdf_path(path: Path) -> str:
 
 def _extract_text_from_pdf_bytes(b: bytes) -> str:
     try:
-        from pypdf import PdfReader
-
         reader = PdfReader(io.BytesIO(b))
         pages = [p.extract_text() or "" for p in reader.pages]
         return "\n".join(pages)
@@ -52,13 +39,6 @@ def _extract_text_from_pdf_bytes(b: bytes) -> str:
 
 
 def load_document_from_url(url: str) -> Tuple[str, DocumentMetadata]:
-    """Load a document from a local path or URL and return (text, metadata).
-
-    - If `docling` is available and exposes a compatible loader, delegate to it.
-    - For local files, use a simple extractor (text files or PDF via pypdf).
-    - For remote URLs, if docling is unavailable, attempt HTTP GET and inspect
-      content-type; for PDFs use pypdf on the response bytes.
-    """
     text: str = ""
     metadata: Optional[DocumentMetadata] = None
 

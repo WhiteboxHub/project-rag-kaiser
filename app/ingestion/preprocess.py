@@ -1,8 +1,4 @@
 # ingestion/preprocess.py
-"""
-Text normalization and lightweight cleaning.
-Do not perform PHI redaction here; that is handled later using guardrails.
-"""
 import re
 from typing import Tuple
 

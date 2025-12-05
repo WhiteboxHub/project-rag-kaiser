@@ -10,23 +10,13 @@ class IngestionPipeline:
     def __init__(self):
         self.chunker = Chunker()
         self.embedder = Embedder()
-        # Use a Chroma-backed local vector store by default
         self.store = ChromaClient()
 
     def ingest(self, doc: IngestionDocument):
-        # Step 1: Load
         text, _metadata = load_document_from_url(doc.file_path)
-
-        # Step 2: Clean using Docling
         cleaned_text = DoclingProcessor.clean_text(text)
-
-        # Step 3: Chunk
         chunks = self.chunker.chunk(cleaned_text)
-
-        # Step 4: Embed
         embeddings = self.embedder.embed(chunks)
-
-        # Step 5: Store in vector store (Chroma)
         self.store.insert(embeddings, chunks, doc.source)
 
         return {

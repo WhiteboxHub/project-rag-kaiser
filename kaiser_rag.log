@@ -1,5 +1,0 @@
-2025-12-03 14:22:51,926 - __main__ - INFO - main.py:35 - Starting Kaiser RAG API server...
-2025-12-03 14:22:52,266 - urllib3.connectionpool - DEBUG - connectionpool.py:1049 - Starting new HTTPS connection (1): us.i.posthog.com:443
-2025-12-03 14:22:52,965 - urllib3.connectionpool - DEBUG - connectionpool.py:544 - https://us.i.posthog.com:443 "POST /batch/ HTTP/1.1" 200 15
-2025-12-03 14:23:08,581 - urllib3.connectionpool - DEBUG - connectionpool.py:1049 - Starting new HTTPS connection (1): us.i.posthog.com:443
-2025-12-03 14:23:09,263 - urllib3.connectionpool - DEBUG - connectionpool.py:544 - https://us.i.posthog.com:443 "POST /batch/ HTTP/1.1" 200 15

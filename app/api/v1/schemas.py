@@ -6,7 +6,7 @@ from typing import List, Optional
 class QueryRequest(BaseModel):
     """Request body for RAG queries."""
     question: str
-    top_k: int = 5  # Number of context chunks to retrieve
+    top_k: int = 5  
 
 
 class RetrievalResult(BaseModel):

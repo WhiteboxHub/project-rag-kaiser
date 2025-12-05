@@ -14,14 +14,6 @@ logger = logging.getLogger(__name__)
 
 
 class ChromaClient:
-    """Simple Chroma DB client wrapper for local persistence.
-
-    API:
-      - insert(embeddings, chunks, source)
-
-    This mirrors the MilvusClient insert signature used by the pipeline.
-    """
-
     def __init__(self, collection_name: str | None = None, persist_dir: str | None = None):
         self.enabled = False
         self.persist_dir = persist_dir or os.getenv("CHROMA_PERSIST_DIR", "data/embeddings/chroma")
@@ -43,12 +35,7 @@ class ChromaClient:
             self.enabled = False
 
     def insert(self, embeddings: List[List[float]], chunks: List[str], source: str):
-        """Insert documents into the Chroma collection.
 
-        embeddings: list of vector lists
-        chunks: list of text strings
-        source: source identifier string
-        """
         if not self.enabled:
             logger.info("Chroma client disabled — skipping insert of %d chunks", len(chunks))
             return

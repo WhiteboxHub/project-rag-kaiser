@@ -1,6 +1,6 @@
 """Vector store retriever - queries Chroma for relevant documents."""
 import logging
-from typing import List, Tuple
+from typing import List, Tuple, Optional
 import os
 
 try:
@@ -14,7 +14,7 @@ logger = logging.getLogger(__name__)
 class Retriever:
     """Query the Chroma vector store for relevant chunks."""
 
-    def __init__(self, persist_dir: str | None = None, collection_name: str | None = None):
+    def __init__(self, persist_dir: Optional[str] = None, collection_name: Optional[str] = None):
         self.persist_dir = persist_dir or os.getenv("CHROMA_PERSIST_DIR", "data/embeddings/chroma")
         self.collection_name = collection_name or os.getenv("CHROMA_COLLECTION", "project_rag")
         self.enabled = False
@@ -62,8 +62,6 @@ class Retriever:
             documents = results["documents"][0]
             distances = results["distances"][0]
 
-            # Convert distances to relevance scores (lower distance = higher relevance)
-            # Chroma uses cosine distance, so we can invert it
             retrieved = []
             for doc, dist in zip(documents, distances):
                 # Cosine similarity = 1 - cosine_distance

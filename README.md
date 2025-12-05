@@ -11,7 +11,7 @@ PDFs (Data) → Ingestion Pipeline → Vector Store (Chroma) → RAG Pipeline �
 ### Components
 
 1. **Ingestion** (`app/ingestion/`)
-   - `pipeline_new.py` - Orchestrates the ingestion workflow
+   - `pipeline.py` - Orchestrates the ingestion workflow
    - `doc_loader.py` - Loads PDFs and extracts text
    - `chunker.py` - Splits text into chunks
    - `embedder.py` - Generates embeddings using OpenAI
@@ -67,7 +67,7 @@ python ./scripts/test_rag.py
 
 ```bash
 # Run FastAPI server
-python -m app.main
+uvicorn app.main:app --reload
 
 # Open browser: http://localhost:8000/docs
 ```

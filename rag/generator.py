@@ -1,4 +1,4 @@
-"""LLM-based response generator."""
+# project-rag-kaiser/rag/generator.py
 import logging
 from typing import List
 from langchain_openai import ChatOpenAI
@@ -8,14 +8,12 @@ logger = logging.getLogger(__name__)
 
 
 class Generator:
-    """Generate answers using LLM with retrieved context."""
-
     def __init__(self, model: str = "gpt-4-turbo"):
         self.model = model
         self.llm = ChatOpenAI(
             model=model,
             api_key=settings.OPENAI_API_KEY,
-            temperature=0.2  # Lower temperature for more factual responses
+            temperature=0.2 
         )
         logger.info("Generator initialized with model: %s", model)
 

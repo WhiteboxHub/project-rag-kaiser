@@ -1,7 +1,9 @@
 # Python bytecode
 __pycache__/
 myenv/
+myvenv/
 venv/
 env/
 data/
 .env
+kaiser_rag.log/

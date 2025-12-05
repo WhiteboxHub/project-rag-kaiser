@@ -1,5 +1,5 @@
 from pydantic import BaseModel, HttpUrl
-from typing import Optional, List
+from typing import Optional, List, Dict
 
 
 class DocumentMetadata(BaseModel):
@@ -20,4 +20,5 @@ class Chunk(BaseModel):
 class IngestionDocument(BaseModel):
     source: str
     file_path: str
-    metadata: dict | None = None
+    # metadata: dict | None = None
+    metadata: Optional[Dict] = None
