@@ -1,0 +1,37 @@
+[build-system]
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "project-rag-kaiser"
+version = "0.1.0"
+description = "Retrieval-Augmented Generation demo for Kaiser health insurance docs"
+readme = "README.md"
+license = { text = "MIT" }
+requires-python = ">=3.9"
+authors = [
+  { name = "Your Name", email = "you@example.com" }
+]
+
+dependencies = [
+  "fastapi>=0.95.0",
+  "uvicorn[standard]>=0.22.0",
+  "python-dotenv>=1.0.0",
+  "urllib3>=2.0.0",
+  "openai>=1.0.0",
+  "langchain-openai>=0.1.0",
+]
+
+[project.urls]
+Homepage = "https://example.com"
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["rag*", "app*"]
+
+[tool.setuptools]
+# editable installs with `pip install -e .` will pick up packages discovered above
+
+# Optional: if you use entry points (e.g. CLI), add a section like below
+#[project.scripts]
+#test-rag = "scripts.test_rag:main"
