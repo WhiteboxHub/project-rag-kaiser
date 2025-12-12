@@ -18,14 +18,18 @@ except Exception:
 from app.schemas.ingestion import DocumentMetadata
 
 
-def _extract_text_from_pdf_path(path: Path) -> str:
+def _extract_text_from_pdf_path(path: Path) -> list[tuple[int, str]]:
+    """Extract text from PDF with page numbers."""
     try:
         reader = PdfReader(str(path))
-        pages = [p.extract_text() or "" for p in reader.pages]
-        return "\n".join(pages)
+        pages = []
+        for i, page in enumerate(reader.pages, start=1):
+            text = page.extract_text() or ""
+            pages.append((i, text))
+        return pages
     except Exception:
         logger.exception("Failed to extract text from PDF using pypdf for %s", path)
-        return ""
+        return []
 
 
 def _extract_text_from_pdf_bytes(b: bytes) -> str:
@@ -38,8 +42,12 @@ def _extract_text_from_pdf_bytes(b: bytes) -> str:
         return ""
 
 
-def load_document_from_url(url: str) -> Tuple[str, DocumentMetadata]:
-    text: str = ""
+def load_document_from_url(url: str) -> Tuple[list[tuple[int, str]], DocumentMetadata]:
+    """
+    Load document and return page-indexed text.
+    Returns: ([(page_num, page_text), ...], metadata)
+    """
+    page_texts: list[tuple[int, str]] = []
     metadata: Optional[DocumentMetadata] = None
 
     # Try using docling first if available
@@ -66,13 +74,16 @@ def load_document_from_url(url: str) -> Tuple[str, DocumentMetadata]:
             else:
                 text = str(doc)
 
+            # Docling doesn't give us page numbers, so treat as single page
+            page_texts = [(1, text)] if text else []
+
             metadata = DocumentMetadata(
                 source_url=None if not str(url).startswith("http") else url,
                 document_type=getattr(doc, "doc_type", "policy"),
                 title=getattr(doc, "title", None),
             )
-            logger.info("Loaded document via docling from %s; extracted %d chars", url, len(text or ""))
-            return (text or ""), metadata
+            logger.info("Loaded document via docling from %s; extracted %d pages", url, len(page_texts))
+            return page_texts, metadata
         except Exception:
             logger.exception("docling loader failed, falling back to lightweight loader for %s", url)
 
@@ -81,20 +92,22 @@ def load_document_from_url(url: str) -> Tuple[str, DocumentMetadata]:
     if p.exists():
         try:
             if p.suffix.lower() == ".pdf":
-                text = _extract_text_from_pdf_path(p)
+                page_texts = _extract_text_from_pdf_path(p)
             else:
                 text = p.read_text(encoding="utf-8", errors="ignore")
+                page_texts = [(1, text)]
         except Exception:
             logger.exception("Error reading local file %s", p)
-            text = ""
+            page_texts = []
 
         metadata = DocumentMetadata(
             source_url=None,
             document_type="policy",
             title=p.name,
         )
-        logger.info("Loaded local document %s; extracted %d chars", p, len(text or ""))
-        return (text or ""), metadata
+        total_chars = sum(len(text) for _, text in page_texts)
+        logger.info("Loaded local document %s; extracted %d pages, %d chars", p, len(page_texts), total_chars)
+        return page_texts, metadata
 
     # Fallback for remote HTTP(S) when docling isn't available
     if str(url).startswith("http"):
@@ -105,22 +118,25 @@ def load_document_from_url(url: str) -> Tuple[str, DocumentMetadata]:
             resp.raise_for_status()
             ctype = resp.headers.get("content-type", "")
             if "pdf" in ctype or url.lower().endswith(".pdf"):
+                # Can't easily get page numbers from bytes, so treat as single page
                 text = _extract_text_from_pdf_bytes(resp.content)
+                page_texts = [(1, text)]
             else:
-                text = resp.text
+                page_texts = [(1, resp.text)]
         except Exception:
             logger.exception("Failed to fetch or parse remote URL %s", url)
-            text = ""
+            page_texts = []
 
         metadata = DocumentMetadata(
             source_url=url,
             document_type="policy",
             title=None,
         )
-        logger.info("Loaded remote document %s; extracted %d chars", url, len(text or ""))
-        return (text or ""), metadata
+        total_chars = sum(len(text) for _, text in page_texts)
+        logger.info("Loaded remote document %s; extracted %d pages, %d chars", url, len(page_texts), total_chars)
+        return page_texts, metadata
 
     # Nothing worked
     logger.warning("Could not load document from %s", url)
     metadata = DocumentMetadata(source_url=None, document_type="policy", title=None)
-    return "", metadata
+    return [], metadata

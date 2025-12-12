@@ -17,3 +17,5 @@ pytest
 pytest-asyncio
 tqdm
 requests
+streamlit
+langchain-huggingface

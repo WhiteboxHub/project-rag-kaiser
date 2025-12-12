@@ -34,8 +34,15 @@ class ChromaClient:
             logger.exception("Failed to initialize Chroma client; Chroma disabled")
             self.enabled = False
 
-    def insert(self, embeddings: List[List[float]], chunks: List[str], source: str):
-
+    def insert(self, embeddings: List[List[float]], chunks: List[str], metadatas: List[dict]):
+        """
+        Insert chunks with rich metadata into ChromaDB.
+        
+        Args:
+            embeddings: List of embedding vectors
+            chunks: List of text chunks
+            metadatas: List of metadata dicts for each chunk
+        """
         if not self.enabled:
             logger.info("Chroma client disabled — skipping insert of %d chunks", len(chunks))
             return
@@ -44,9 +51,11 @@ class ChromaClient:
             logger.warning("No chunks to insert into Chroma")
             return
 
+        if len(chunks) != len(metadatas):
+            logger.error("Chunks and metadatas length mismatch: %d vs %d", len(chunks), len(metadatas))
+            return
+
         try:
-            metadatas = [{"source": source} for _ in chunks]
-            
             ids = [str(uuid.uuid4()) for _ in chunks]
             
             self.collection.add(documents=chunks, embeddings=embeddings, metadatas=metadatas, ids=ids)

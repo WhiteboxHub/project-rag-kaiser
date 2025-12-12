@@ -32,6 +32,7 @@ def main(parallel: int = 1):
         "data/kaiser/principlesofresponsibility-en.pdf",
         "data/kaiser/evidence-of-coverage-special-needs-eae-ncal.pdf",
         "data/kaiser/member-guide-wa-en.pdf",
+        "data/kaiser/kp-1.pdf",
     ]
 
     docs = []

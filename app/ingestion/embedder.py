@@ -1,11 +1,11 @@
-from langchain_openai import OpenAIEmbeddings
+from langchain_huggingface import HuggingFaceEmbeddings
 from app.core.config import settings
 
 class Embedder:
     def __init__(self):
-        self.model = OpenAIEmbeddings(
-            model=settings.EMBEDDING_MODEL,
-            api_key=settings.OPENAI_API_KEY
+        # Use a local transformer model
+        self.model = HuggingFaceEmbeddings(
+            model_name="sentence-transformers/all-MiniLM-L6-v2"
         )
 
     def embed(self, chunks: list[str]) -> list[list[float]]:
